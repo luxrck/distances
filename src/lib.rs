@@ -1,5 +1,5 @@
 mod distances;
-pub use distances::*;
+pub use crate::distances::*;
 
 #[cfg(feature="python")]
 mod python;
