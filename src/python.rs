@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use numpy::{PyArray, IntoPyArray};
+use std::time::SystemTime;
 
 use crate::distances;
 
@@ -15,9 +16,14 @@ pub fn levenshtein(s: &str, t: &str) -> usize {
 
 #[pyfunction]
 pub fn levenshteins<'py>(py: Python<'py>, inputs: Vec<&str>) -> &'py PyArray<u8, numpy::Ix2> {
+  println!("{:?}", SystemTime::now());
 	let inputs: Vec<Vec<char>> = inputs.iter().map(|x| x.chars().collect::<Vec<char>>()).collect();
+  println!("{:?}", SystemTime::now());
 	let x = distances::levenshteins(&inputs, &_C);
-	x.into_pyarray(py)
+  println!("{:?}", SystemTime::now());
+	let x = x.into_pyarray(py);
+  println!("{:?}", SystemTime::now());
+  x
 }
 
 #[pyfunction]
