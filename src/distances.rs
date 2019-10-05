@@ -14,7 +14,7 @@ impl Default for LevenshteinCost {
 }
 
 
-pub fn levenshtein_(s: &[char], t: &[char], c: &LevenshteinCost, dp: &mut [usize]) -> usize {
+pub fn levenshtein_<T: Eq>(s: &[T], t: &[T], c: &LevenshteinCost, dp: &mut [usize]) -> usize {
 	let (ls, lt) = (s.len(), t.len());
 
 	let (mut ps, mut pe) = (0, 0);
@@ -66,10 +66,11 @@ pub fn levenshtein_(s: &[char], t: &[char], c: &LevenshteinCost, dp: &mut [usize
 	dp[lt]
 }
 
-pub fn levenshtein(s: &[char], t: &[char], c: &LevenshteinCost) -> usize {
-	// let mut dp: Vec<usize> = (0..=std::cmp::max(s.len(), t.len())).map(|x| x).collect();
-	let mut dp: Vec<usize> = vec![0; std::cmp::max(s.len(), t.len())];
-	levenshtein_(s, t, c, &mut dp)
+pub fn levenshtein(s: &str, t: &str, c: &LevenshteinCost) -> usize {
+	let s: Vec<char> = s.chars().collect();
+	let t: Vec<char> = t.chars().collect();
+	let mut dp = vec![0usize; std::cmp::max(s.len(), t.len())];
+	levenshtein_(&s, &t, c, &mut dp)
 }
 
 pub fn levenshteins(inputs: &Vec<Vec<char>>, c: &LevenshteinCost) -> Array2<u8> {
@@ -77,7 +78,7 @@ pub fn levenshteins(inputs: &Vec<Vec<char>>, c: &LevenshteinCost) -> Array2<u8> 
 	let len_ms = inputs.iter().map(|x| x.len()).max().unwrap() + 1;
 	let mut m = Array2::<u8>::zeros((len, len));
 	m.axis_iter_mut(Axis(0)).into_par_iter().enumerate().for_each(|(i, mut v)| {
-		let mut dp: Vec<usize> = vec![0; len_ms];
+		let mut dp = vec![0usize; len_ms];
 		(i+1..len).for_each(|j| {
 			// let (mut _p, mut _n) = (0, 0);
 			// dp.resize_with(std::cmp::max(inputs[i].len(), inputs[j].len()) + 1, || {_p=_n; _n+=1; _p});
@@ -101,8 +102,8 @@ mod test {
 
 	#[test]
 	fn test_levenshtein() {
-		let t: Vec<char> = "woefjweoifwjeio".chars().collect();
-		let s: Vec<char> = "woefjweiofajfoewifj".chars().collect();
+		let t = "woefjweoifwjeio";
+		let s = "woefjweiofajfoewifj";
 		let d = super::levenshtein(&s, &t, &super::LevenshteinCost::default());
 		assert_eq!(d, 8);
 	}

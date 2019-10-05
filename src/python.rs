@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 use pyo3::ffi::{PyUnicode_AsUnicodeAndSize, PyUnicode_FromObject};
 use pyo3::wrap_pyfunction;
 use numpy::{PyArray, IntoPyArray};
-
+use std::time::SystemTime;
 use std::ffi::CString;
 
 use crate::distances;
@@ -23,14 +23,17 @@ unsafe extern "C" fn levenshtein(_self: *mut pyo3::ffi::PyObject,
 	let mut lt: pyo3::ffi::Py_ssize_t = 0;
 	let t = PyUnicode_AsUnicodeAndSize(PyUnicode_FromObject(t), &mut lt);
 
-	let s: Vec<char> = std::slice::from_raw_parts(s, ls as usize)
-								 .into_iter()
-								 .map(|x| std::char::from_u32_unchecked(*x as u32))
-								 .collect();
-	let t: Vec<char> = std::slice::from_raw_parts(t, lt as usize)
-								 .into_iter()
-								 .map(|x| std::char::from_u32_unchecked(*x as u32))
-								 .collect();
+	// let s: Vec<char> = std::slice::from_raw_parts(s, ls as usize)
+	// 							 .into_iter()
+	// 							 .map(|x| std::char::from_u32_unchecked(*x as u32))
+	// 							 .collect();
+	// let t: Vec<char> = std::slice::from_raw_parts(t, lt as usize)
+	// 							 .into_iter()
+	// 							 .map(|x| std::char::from_u32_unchecked(*x as u32))
+	// 							 .collect();
+
+	let s = std::slice::from_raw_parts(s, ls as usize);
+	let t = std::slice::from_raw_parts(t, lt as usize);
 
 	let len = std::cmp::max(s.len(), t.len()) + 1;
 	if len > _D.len() {
@@ -62,19 +65,19 @@ fn __pyo3_levenshtein(py: pyo3::Python) -> pyo3::PyObject {
 }
 
 #[pyfunction]
-pub fn levenshteins<'py>(py: Python<'py>, inputs: Vec<&str>) -> &'py PyArray<u8, numpy::Ix2> {
-//   println!("{:?}", SystemTime::now());
+fn levenshteins<'py>(py: Python<'py>, inputs: Vec<&str>) -> &'py PyArray<u8, numpy::Ix2> {
+	// println!("{:?}", SystemTime::now());
 	let inputs: Vec<Vec<char>> = inputs.iter().map(|x| x.chars().collect()).collect();
-//   println!("{:?}", SystemTime::now());
+	// println!("{:?}", SystemTime::now());
 	let x = distances::levenshteins(&inputs, &_C);
-//   println!("{:?}", SystemTime::now());
+	// println!("{:?}", SystemTime::now());
 	let x = x.into_pyarray(py);
-//   println!("{:?}", SystemTime::now());
-  x
+	// println!("{:?}", SystemTime::now());
+	x
 }
 
 #[pyfunction]
-pub fn cchars(s: &str, t: &str) -> usize {
+fn cchars(s: &str, t: &str) -> usize {
 	distances::cchars(s, t)
 }
 
