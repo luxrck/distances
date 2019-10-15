@@ -8,7 +8,7 @@ edition = "2018"
 
 [lib]
 name = "distances"
-crate-type = ["dylib", "rlib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 ndarray = {version = "0.13.0", features = ["rayon"]}
