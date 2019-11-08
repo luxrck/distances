@@ -3,7 +3,7 @@ use pyo3::ffi::{PyUnicode_AsUnicodeAndSize, PyUnicode_FromObject};
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::ffi::CString;
-use std::time::SystemTime;
+//use std::time::SystemTime;
 
 use crate::distances;
 
